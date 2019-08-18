@@ -5,122 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>chaos game</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      background-color: #2e2e2e;
-    }
-    body {
-      background-color: #1c1c1c;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    canvas {
-      margin: 30px 0px;
-      border-radius: 5px;
-    }
-    #controlPanel {
-      margin: 30px 0px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      border-radius: 5px;
-    }
-    #button {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-      border-radius: 5px;
-    }
-    @media only screen and (max-width: 700px) {
-      body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-      }
-      img {
-        margin: 10px 0px;
-      }
-    }
-    img {
-      margin: 20px 0px;
-    }
-    img:hover {
-      transition: all 0.5s ease;
-      transform: scale(0.65);
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-    }
-    p {
-      color: #d8d8d8;
-      padding: 10px 15px;
-      font-size: 20px;
-      font-family: monospace;
-    }
-    input {
-      color: #d8d8d8;
-      font-family: monospace;
-      font-size: 15px;
-    }
-  </style>
-  <body id="body">
-    <canvas id="canvas"></canvas>
+  <body>
+    <div id="canvasParent">
+      <canvas id="canvas"></canvas>
+    </div>
     <div id="controlPanel">
-      <div id="button">
+      <div id="buttons">
         <img id="restartF" src="img/restartWhite.png" />
         <img id="goF" src="img/goGreen.png" />
         <img id="stopF" src="img/stopDarkBlue.png" />
       </div>
-      <div id="option">
-        <form>
-          <p>
-            <b>Color:</b><br />
-            <input id="color" type="range" min="1" max="2" step="1" value="1" />
-          </p>
-          <p>
-            <b>Count of vertex:</b><br />
-            <input id="countOfVertex" type="text" size="20" value="3" />
-          </p>
-          <p>
-            <b>Percent:</b><br />
-            <input id="percent" type="text" size="20" value="50" />
-          </p>
-          <p>
-            <b>Type of generation:</b><br />
-            <input
-              id="typeOfGeneration"
-              type="range"
-              min="1"
-              max="3"
-              step="1"
-              value="1"
-            />
-          </p>
-          <p>
-            <b>Hidden vertex:</b><br />
-            <input
-              id="vertexMode"
-              type="range"
-              min="1"
-              max="2"
-              step="1"
-              value="1"
-            />
-          </p>
-        </form>
-      </div>
+      <p>
+        <b>Color for each vertex:</b>
+        <input id="color" type="checkbox" />
+      </p>
+      <p>
+        <b>Count of vertex:</b><br />
+        <input id="countOfVertex" type="text" value="3" />
+      </p>
+      <p>
+        <b>Percent:</b><br />
+        <input id="percent" type="text" value="50" />
+      </p>
+      <p>
+        <b>Type of generation:</b><br />
+        <input
+          id="typeOfGeneration"
+          type="range"
+          min="1"
+          max="3"
+          step="1"
+          value="1"
+        />
+      </p>
+      <p>
+        <b>Hidden vertex:</b>
+        <input id="vertexMode" type="checkbox" />
+      </p>
     </div>
   </body>
-  <script src="style.js"></script>
   <script src="script.js"></script>
 </html>

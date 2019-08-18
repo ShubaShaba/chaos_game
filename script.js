@@ -1,6 +1,21 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
-// let textField = document.getElementById("text");
+
+function adjustCanvasSize() {
+  let viewportWidth = document.documentElement.clientWidth;
+  let viewportHeight = document.documentElement.clientHeight;
+  if (viewportWidth > viewportHeight) {
+    // landscape
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+  } else {
+    // portrait
+    canvas.width = viewportWidth;
+    canvas.height = viewportHeight;
+  }
+}
+adjustCanvasSize();
+window.addEventListener("resize", adjustCanvasSize);
 
 function random(min, max) {
   return min + Math.random() * (max - min);
@@ -19,7 +34,6 @@ function setIntervalAndExecute(f, t) {
   return setInterval(f, t);
 }
 
-// not finished: nextArrayElementIndex(array, 2, 6, false) -4 : 1 / nextArrayElementIndex(array, 2, 7, false) -5 : 0 / nextArrayElementIndex(array, 2, 8, false) -6 : -1;
 function nextArrayElementIndex(array, currentI, through, action) {
   let index;
   if (action) {
@@ -35,12 +49,6 @@ function nextArrayElementIndex(array, currentI, through, action) {
   }
   return index;
 }
-
-// function setRange(array, currentI, through, action, plus, minus) {
-//   for(){
-//     let pointOfRange = nextArrayElementIndex(array, currentI, through, action);
-//   }
-// }
 
 let colors = [
   "#FFFF00",
@@ -68,19 +76,13 @@ let pointsRadius = 0.1;
 let vertexsColor = "#FFFFFF";
 let firstPointColor = "#FF4500";
 
-let kOfSize = 2.2;
-if (canvas.width < canvas.height) {
-  kOfSize = 3;
-  pointsRadius = 0.3;
-}
-
-let colorSettings = Number(document.getElementById("color").value);
+let colorSettings = document.getElementById("color").checked;
 let vertexsCount = Number(document.getElementById("countOfVertex").value);
 let percentOfPath = Number(document.getElementById("percent").value) / 100;
 let typeOfCalcRandomDirection = Number(
   document.getElementById("typeOfGeneration").value
 );
-let vertexMode = Number(document.getElementById("vertexMode").value);
+let vertexMode = document.getElementById("vertexMode").checked;
 
 function pathCalc(x, y, x0, y0) {
   return [x0 + (x - x0) * percentOfPath, y0 + (y - y0) * percentOfPath];
@@ -98,21 +100,20 @@ function setup() {
 
     let pointIndex = i;
 
-    let x = (Math.cos(angel) * canvas.height) / kOfSize + canvas.width / 2,
-      y = (Math.sin(angel) * canvas.height) / kOfSize + canvas.height / 2;
+    let x = (Math.cos(angel) * canvas.height) / 3 + canvas.width / 2,
+      y = (Math.sin(angel) * canvas.height) / 3 + canvas.height / 2;
 
-    if (colorSettings === 2) {
+    if (colorSettings) {
       pointsColor = colors[Math.floor(Math.random() * colors.length)];
     }
 
-    if (vertexMode === 2) {
+    if (vertexMode) {
       circle(ctx, x, y, vertexsRadius, vertexsColor);
     }
     vertexsData.push([x, y, pointsColor, pointIndex]);
   }
 }
 
-let countOfIteration = 0;
 let lastPoint;
 let lastChosenVertex;
 
@@ -164,8 +165,6 @@ function render() {
         circle(ctx, point[0], point[1], pointsRadius, nextPointData[2]);
         lastPoint = point;
       }
-      countOfIteration++;
-      // textField.innerHTML = countOfIteration;
     }
   }
 }
@@ -174,31 +173,31 @@ function render() {
 
 let x = random(0, canvas.width),
   y = random(0, canvas.height);
-if (vertexMode === 2) {
+if (vertexMode) {
   circle(ctx, x, y, firstPointRadius, firstPointColor);
 }
 
 setup();
-let draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
+// let draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
+let draw = null;
 let animationStatus = false;
 
 restartF.onclick = function() {
-  colorSettings = Number(document.getElementById("color").value);
+  colorSettings = document.getElementById("color").checked;
   vertexsCount = Number(document.getElementById("countOfVertex").value);
   percentOfPath = Number(document.getElementById("percent").value) / 100;
   typeOfCalcRandomDirection = Number(
     document.getElementById("typeOfGeneration").value
   );
-  vertexMode = Number(document.getElementById("vertexMode").value);
+  vertexMode = document.getElementById("vertexMode").checked;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   clearInterval(draw);
   vertexsData = [];
-  countOfIteration = 0;
   lastChosenVertex = null;
   lastPoint = null;
   setup();
-  if (vertexMode === 2) {
+  if (vertexMode) {
     for (let i = 0; i < vertexsData.length; i++) {
       circle(
         ctx,
