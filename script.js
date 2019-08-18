@@ -178,8 +178,8 @@ if (vertexMode) {
 }
 
 setup();
-// let draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
-let draw = null;
+let draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
+// let draw = null;
 let animationStatus = false;
 
 restartF.onclick = function() {
