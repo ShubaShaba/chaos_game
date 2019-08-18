@@ -14,13 +14,16 @@
     }
     body {
       background-color: #1c1c1c;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
     }
     canvas {
+      margin: 30px 0px;
       border-radius: 5px;
     }
     #controlPanel {
-      margin-top: 30px;
-      padding: 20px 0px;
+      margin: 30px 0px;
       text-align: center;
       display: flex;
       flex-direction: column;
@@ -28,32 +31,21 @@
       border-radius: 5px;
     }
     #button {
-      text-align: center;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: space-around;
       align-items: center;
       border-radius: 5px;
     }
     @media only screen and (max-width: 700px) {
-      #button {
-        margin-top: 30px;
-        text-align: center;
+      body {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
       }
       img {
         margin: 10px 0px;
-      }
-    }
-    @media only screen and (max-width: 1200px) {
-      form {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
       }
     }
     img {
@@ -65,6 +57,7 @@
     }
     form {
       display: flex;
+      flex-direction: column;
       justify-content: space-around;
       align-items: center;
     }

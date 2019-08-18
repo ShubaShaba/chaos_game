@@ -61,11 +61,11 @@ let speedOfRender = {
   iterationEvery: 10
 };
 
-let mainPointsRadius = 4;
+let vertexsRadius = 4;
 let firstPointRadius = 3;
 let pointsRadius = 0.1;
 
-let mainPointsColor = "#FFFFFF";
+let vertexsColor = "#FFFFFF";
 let firstPointColor = "#FF4500";
 
 let kOfSize = 2.2;
@@ -75,7 +75,7 @@ if (canvas.width < canvas.height) {
 }
 
 let colorSettings = Number(document.getElementById("color").value);
-let mainPointsCount = Number(document.getElementById("countOfVertex").value);
+let vertexsCount = Number(document.getElementById("countOfVertex").value);
 let percentOfPath = Number(document.getElementById("percent").value) / 100;
 let typeOfCalcRandomDirection = Number(
   document.getElementById("typeOfGeneration").value
@@ -88,13 +88,13 @@ function pathCalc(x, y, x0, y0) {
 
 //--------------- drawing function:
 
-let mainPointsData = [];
+let vertexsData = [];
 
 function setup() {
   let pointsColor = colors[Math.floor(Math.random() * colors.length)];
 
-  for (let i = 0; i < mainPointsCount; i++) {
-    let angel = i * ((Math.PI * 2) / mainPointsCount) - (Math.PI * 2) / 4;
+  for (let i = 0; i < vertexsCount; i++) {
+    let angel = i * ((Math.PI * 2) / vertexsCount) - (Math.PI * 2) / 4;
 
     let pointIndex = i;
 
@@ -106,9 +106,9 @@ function setup() {
     }
 
     if (vertexMode === 2) {
-      circle(ctx, x, y, mainPointsRadius, mainPointsColor);
+      circle(ctx, x, y, vertexsRadius, vertexsColor);
     }
-    mainPointsData.push([x, y, pointsColor, pointIndex]);
+    vertexsData.push([x, y, pointsColor, pointIndex]);
   }
 }
 
@@ -117,21 +117,21 @@ let lastPoint;
 let lastChosenVertex;
 
 function render() {
-  if (mainPointsData[0]) {
+  if (vertexsData[0]) {
     for (let i = 0; i < speedOfRender.pointPerIteration; i++) {
       let nextPointData =
-        mainPointsData[Math.floor(Math.random() * mainPointsData.length)];
+        vertexsData[Math.floor(Math.random() * vertexsData.length)];
 
       if (typeOfCalcRandomDirection === 3 && lastChosenVertex != null) {
         do {
           nextPointData =
-            mainPointsData[Math.floor(Math.random() * mainPointsData.length)];
+            vertexsData[Math.floor(Math.random() * vertexsData.length)];
         } while (
-          nextArrayElementIndex(mainPointsData, nextPointData[3], 1, true) !==
+          nextArrayElementIndex(vertexsData, nextPointData[3], 1, true) !==
             lastChosenVertex[3] &&
-          nextArrayElementIndex(mainPointsData, nextPointData[3], 1, false) !==
+          nextArrayElementIndex(vertexsData, nextPointData[3], 1, false) !==
             lastChosenVertex[3] &&
-          nextArrayElementIndex(mainPointsData, nextPointData[3], 0, false) !==
+          nextArrayElementIndex(vertexsData, nextPointData[3], 0, false) !==
             lastChosenVertex[3]
         );
       }
@@ -139,7 +139,7 @@ function render() {
       if (typeOfCalcRandomDirection === 2 && lastChosenVertex != null) {
         do {
           nextPointData =
-            mainPointsData[Math.floor(Math.random() * mainPointsData.length)];
+            vertexsData[Math.floor(Math.random() * vertexsData.length)];
         } while (
           nextPointData[0] === lastChosenVertex[0] &&
           nextPointData[1] === lastChosenVertex[1]
@@ -184,7 +184,7 @@ let animationStatus = false;
 
 restartF.onclick = function() {
   colorSettings = Number(document.getElementById("color").value);
-  mainPointsCount = Number(document.getElementById("countOfVertex").value);
+  vertexsCount = Number(document.getElementById("countOfVertex").value);
   percentOfPath = Number(document.getElementById("percent").value) / 100;
   typeOfCalcRandomDirection = Number(
     document.getElementById("typeOfGeneration").value
@@ -193,19 +193,19 @@ restartF.onclick = function() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   clearInterval(draw);
-  mainPointsData = [];
+  vertexsData = [];
   countOfIteration = 0;
   lastChosenVertex = null;
   lastPoint = null;
   setup();
   if (vertexMode === 2) {
-    for (let i = 0; i < mainPointsData.length; i++) {
+    for (let i = 0; i < vertexsData.length; i++) {
       circle(
         ctx,
-        mainPointsData[i][0],
-        mainPointsData[i][1],
-        mainPointsRadius,
-        mainPointsColor
+        vertexsData[i][0],
+        vertexsData[i][1],
+        vertexsRadius,
+        vertexsColor
       );
     }
     circle(ctx, x, y, firstPointRadius, firstPointColor);
