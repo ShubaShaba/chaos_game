@@ -1,5 +1,5 @@
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
 
 function adjustCanvasSize() {
   let viewportWidth = document.documentElement.clientWidth;
@@ -15,18 +15,22 @@ function adjustCanvasSize() {
   }
 }
 adjustCanvasSize();
-window.addEventListener("resize", adjustCanvasSize);
+window.addEventListener('resize', adjustCanvasSize);
 
 function random(min, max) {
   return min + Math.random() * (max - min);
 }
 
-function circle(canvas, x, y, r, color) {
-  canvas.beginPath();
-  canvas.fillStyle = color;
-  canvas.arc(x, y, r, Math.PI * 2, 0, false);
-  canvas.fill();
-  canvas.closePath();
+function randomElement(array) {
+  return array[Math.floor(random(0, array.length))];
+}
+
+function circle(x, y, r, color) {
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.arc(x, y, r, Math.PI * 2, 0, false);
+  ctx.fill();
+  ctx.closePath();
 }
 
 function setIntervalAndExecute(f, t) {
@@ -51,49 +55,45 @@ function nextArrayElementIndex(array, currentI, through, action) {
 }
 
 let colors = [
-  "#FFFF00",
-  "#00FFFF",
-  "#FF0040",
-  "#00FF00",
-  "#FF0000",
-  "#0404B4",
-  "#FF00FF",
-  "#FFFFFF",
-  "#A4A4A4",
-  "#FF8000",
-  "#819FF7"
+  '#FFFF00',
+  '#00FFFF',
+  '#FF0040',
+  '#00FF00',
+  '#FF0000',
+  '#0404B4',
+  '#FF00FF',
+  '#FFFFFF',
+  '#A4A4A4',
+  '#FF8000',
+  '#819FF7',
 ];
 
-let speedOfRender = {
-  pointPerIteration: 1000,
-  iterationEvery: 10
-};
+let newPointsPerIteration = 1;
+let iterationInterval = 10;
 
-let vertexsRadius = 4;
+let vertexRadius = 4;
 let firstPointRadius = 3;
-let pointsRadius = 0.1;
+let pointsRadius = 10;
 
-let vertexsColor = "#FFFFFF";
-let firstPointColor = "#FF4500";
+let vertexColor = '#FFFFFF';
+let firstPointColor = '#FF4500';
 
-let colorSettings = document.getElementById("color").checked;
-let vertexsCount = Number(document.getElementById("countOfVertex").value);
-let percentOfPath = Number(document.getElementById("percent").value) / 100;
-let typeOfCalcRandomDirection = Number(
-  document.getElementById("typeOfGeneration").value
-);
-let vertexMode = document.getElementById("vertexMode").checked;
+let colorSettings;
+let vertexsCount;
+let percentOfPath;
+let typeOfCalcRandomDirection;
+let showVertices;
 
-function pathCalc(x, y, x0, y0) {
-  return [x0 + (x - x0) * percentOfPath, y0 + (y - y0) * percentOfPath];
+function lerp(x1, y1, x2, y2) {
+  return [x2 + (x1 - x2) * percentOfPath, y2 + (y1 - y2) * percentOfPath];
 }
 
 //--------------- drawing function:
 
-let vertexsData = [];
+let vertices = [];
 
-function setup() {
-  let pointsColor = colors[Math.floor(Math.random() * colors.length)];
+function createVertices() {
+  let pointsColor = randomElement(colors);
 
   for (let i = 0; i < vertexsCount; i++) {
     let angel = i * ((Math.PI * 2) / vertexsCount) - (Math.PI * 2) / 4;
@@ -104,43 +104,69 @@ function setup() {
       y = (Math.sin(angel) * canvas.height) / 3 + canvas.height / 2;
 
     if (colorSettings) {
-      pointsColor = colors[Math.floor(Math.random() * colors.length)];
+      pointsColor = randomElement(colors);
     }
 
-    if (vertexMode) {
-      circle(ctx, x, y, vertexsRadius, vertexsColor);
+    if (showVertices) {
+      circle(x, y, vertexRadius, vertexColor);
     }
-    vertexsData.push([x, y, pointsColor, pointIndex]);
+    vertices.push([x, y, pointsColor, pointIndex]);
   }
 }
+
+let x, y;
 
 let lastPoint;
 let lastChosenVertex;
 
+function start() {
+  colorSettings = document.getElementById('color').checked;
+  vertexsCount = Number(document.getElementById('countOfVertex').value);
+  percentOfPath = Number(document.getElementById('percent').value) / 100;
+  typeOfCalcRandomDirection = Number(
+    document.getElementById('typeOfGeneration').value,
+  );
+  showVertices = document.getElementById('showVertices').checked;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  clearInterval(draw);
+  vertices = [];
+  x = random(0, canvas.width);
+  y = random(0, canvas.height);
+  lastChosenVertex = null;
+  lastPoint = null;
+  createVertices();
+  if (showVertices) {
+    for (let i = 0; i < vertices.length; i++) {
+      circle(vertices[i][0], vertices[i][1], vertexRadius, vertexColor);
+    }
+    circle(x, y, firstPointRadius, firstPointColor);
+  }
+  draw = setIntervalAndExecute(render, iterationInterval);
+  isAnimationRunning = true;
+}
+
 function render() {
-  if (vertexsData[0]) {
-    for (let i = 0; i < speedOfRender.pointPerIteration; i++) {
-      let nextPointData =
-        vertexsData[Math.floor(Math.random() * vertexsData.length)];
+  if (vertices[0]) {
+    for (let i = 0; i < newPointsPerIteration; i++) {
+      let nextPointData = randomElement(vertices);
 
       if (typeOfCalcRandomDirection === 3 && lastChosenVertex != null) {
         do {
-          nextPointData =
-            vertexsData[Math.floor(Math.random() * vertexsData.length)];
+          nextPointData = randomElement(vertices);
         } while (
-          nextArrayElementIndex(vertexsData, nextPointData[3], 1, true) !==
+          nextArrayElementIndex(vertices, nextPointData[3], 1, true) !==
             lastChosenVertex[3] &&
-          nextArrayElementIndex(vertexsData, nextPointData[3], 1, false) !==
+          nextArrayElementIndex(vertices, nextPointData[3], 1, false) !==
             lastChosenVertex[3] &&
-          nextArrayElementIndex(vertexsData, nextPointData[3], 0, false) !==
+          nextArrayElementIndex(vertices, nextPointData[3], 0, false) !==
             lastChosenVertex[3]
         );
       }
 
       if (typeOfCalcRandomDirection === 2 && lastChosenVertex != null) {
         do {
-          nextPointData =
-            vertexsData[Math.floor(Math.random() * vertexsData.length)];
+          nextPointData = randomElement(vertices);
         } while (
           nextPointData[0] === lastChosenVertex[0] &&
           nextPointData[1] === lastChosenVertex[1]
@@ -152,17 +178,17 @@ function render() {
       }
 
       if (lastPoint != null) {
-        let point = pathCalc(
+        let point = lerp(
           nextPointData[0],
           nextPointData[1],
           lastPoint[0],
-          lastPoint[1]
+          lastPoint[1],
         );
-        circle(ctx, point[0], point[1], pointsRadius, nextPointData[2]);
+        circle(point[0], point[1], pointsRadius, nextPointData[2]);
         lastPoint = point;
       } else {
-        let point = pathCalc(nextPointData[0], nextPointData[1], x, y);
-        circle(ctx, point[0], point[1], pointsRadius, nextPointData[2]);
+        let point = lerp(nextPointData[0], nextPointData[1], x, y);
+        circle(point[0], point[1], pointsRadius, nextPointData[2]);
         lastPoint = point;
       }
     }
@@ -171,58 +197,29 @@ function render() {
 
 //--------------- drawing:
 
-let x = random(0, canvas.width),
-  y = random(0, canvas.height);
-if (vertexMode) {
-  circle(ctx, x, y, firstPointRadius, firstPointColor);
+if (showVertices) {
+  circle(x, y, firstPointRadius, firstPointColor);
 }
 
-setup();
-let draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
-// let draw = null;
-let animationStatus = false;
+let draw;
+let isAnimationRunning = false;
 
-restartF.onclick = function() {
-  colorSettings = document.getElementById("color").checked;
-  vertexsCount = Number(document.getElementById("countOfVertex").value);
-  percentOfPath = Number(document.getElementById("percent").value) / 100;
-  typeOfCalcRandomDirection = Number(
-    document.getElementById("typeOfGeneration").value
-  );
-  vertexMode = document.getElementById("vertexMode").checked;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  clearInterval(draw);
-  vertexsData = [];
-  lastChosenVertex = null;
-  lastPoint = null;
-  setup();
-  if (vertexMode) {
-    for (let i = 0; i < vertexsData.length; i++) {
-      circle(
-        ctx,
-        vertexsData[i][0],
-        vertexsData[i][1],
-        vertexsRadius,
-        vertexsColor
-      );
-    }
-    circle(ctx, x, y, firstPointRadius, firstPointColor);
-  }
-  draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
-  animationStatus = true;
+document.getElementById('restartF').onclick = function() {
+  start();
 };
 
-stopF.onclick = function() {
-  if (animationStatus) {
+document.getElementById('stopF').onclick = function() {
+  if (isAnimationRunning) {
     clearInterval(draw);
-    animationStatus = false;
+    isAnimationRunning = false;
   }
 };
 
-goF.onclick = function() {
-  if (!animationStatus) {
-    draw = setIntervalAndExecute(render, speedOfRender.iterationEvery);
-    animationStatus = true;
+document.getElementById('goF').onclick = function() {
+  if (!isAnimationRunning) {
+    draw = setIntervalAndExecute(render, iterationInterval);
+    isAnimationRunning = true;
   }
 };
+
+start();
