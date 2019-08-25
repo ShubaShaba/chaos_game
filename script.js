@@ -96,6 +96,7 @@ let $vertexSelectionStrategy = document.getElementById(
   'vertexSelectionStrategy',
 );
 let $showVertices = document.getElementById('showVertices');
+let $pointsCount = document.getElementById('pointsCount');
 
 function lerp(a, b) {
   let delta = Number($pathPercent.value / 100);
@@ -140,66 +141,66 @@ function start() {
 function update() {
   if (!isAnimationRunning) return;
 
-  if (vertices[0]) {
-    for (let i = 0; i < newPointsPerIteration; i++) {
-      let vertexSelectionStrategy = Number($vertexSelectionStrategy.value);
-      switch (vertexSelectionStrategy) {
-        case 1: {
-          vertexIndex = randomInt(0, vertices.length);
-          break;
-        }
-        case 2: {
-          let index = randomInt(0, vertices.length - 1);
-          if (index < vertexIndex) {
-            vertexIndex = index;
-          } else {
-            vertexIndex = index + 1;
-          }
-          break;
-        }
-        case 3: {
-          let direction = randomInt(0, 3);
-          if (direction === 0) {
-            // vertexIndex = vertexIndex;
-          } else if (direction === 1) {
-            if (vertexIndex > 0) {
-              vertexIndex -= 1;
-            } else {
-              vertexIndex = vertices.length - 1;
-            }
-          } else if (direction === 2) {
-            if (vertexIndex < vertices.length - 1) {
-              vertexIndex += 1;
-            } else {
-              vertexIndex = 0;
-            }
-          }
-          break;
-        }
-        case 4: {
-          let direction = randomInt(0, 2);
-          if (direction === 0) {
-            if (vertexIndex > 0) {
-              vertexIndex -= 1;
-            } else {
-              vertexIndex = vertices.length - 1;
-            }
-          } else if (direction === 1) {
-            if (vertexIndex < vertices.length - 1) {
-              vertexIndex += 1;
-            } else {
-              vertexIndex = 0;
-            }
-          }
-          break;
-        }
+  for (let i = 0; i < newPointsPerIteration; i++) {
+    let vertexSelectionStrategy = Number($vertexSelectionStrategy.value);
+    switch (vertexSelectionStrategy) {
+      case 1: {
+        vertexIndex = randomInt(0, vertices.length);
+        break;
       }
-
-      let pos = lerp(lastPos, vertices[vertexIndex]);
-      points.push({ pos, vertexIndex });
-      lastPos = pos;
+      case 2: {
+        let index = randomInt(0, vertices.length - 1);
+        if (index < vertexIndex) {
+          vertexIndex = index;
+        } else {
+          vertexIndex = index + 1;
+        }
+        break;
+      }
+      case 3: {
+        let direction = randomInt(0, 3);
+        if (direction === 0) {
+          // vertexIndex = vertexIndex;
+        } else if (direction === 1) {
+          if (vertexIndex > 0) {
+            vertexIndex -= 1;
+          } else {
+            vertexIndex = vertices.length - 1;
+          }
+        } else if (direction === 2) {
+          if (vertexIndex < vertices.length - 1) {
+            vertexIndex += 1;
+          } else {
+            vertexIndex = 0;
+          }
+        }
+        break;
+      }
+      case 4: {
+        let direction = randomInt(0, 2);
+        if (direction === 0) {
+          if (vertexIndex > 0) {
+            vertexIndex -= 1;
+          } else {
+            vertexIndex = vertices.length - 1;
+          }
+        } else if (direction === 1) {
+          if (vertexIndex < vertices.length - 1) {
+            vertexIndex += 1;
+          } else {
+            vertexIndex = 0;
+          }
+        }
+        break;
+      }
     }
+
+    let pos = lerp(lastPos, vertices[vertexIndex]);
+    points.push({ pos, vertexIndex });
+    lastPos = pos;
   }
+
+  $pointsCount.textContent = points.length;
 }
 setInterval(update, iterationInterval);
 
