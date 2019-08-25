@@ -106,6 +106,8 @@ function lerp(a, b) {
   };
 }
 
+let isAnimationRunning = false;
+
 let vertices = [];
 let globalVertexColor;
 
@@ -113,10 +115,9 @@ let lastPos;
 let randomPoint;
 let vertexIndex;
 
-let points = [];
-
 function start() {
-  points = [];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   randomPoint = { x: random(0, 1), y: random(0, 1) };
   lastPos = randomPoint;
 
@@ -135,6 +136,15 @@ function start() {
     vertices.push({ x, y, color });
   }
   vertexIndex = randomElement(vertices);
+
+  if ($showVertices.checked) {
+    for (let i = 0; i < vertices.length; i++) {
+      let vertex = vertices[i];
+      circle(vertex, vertexRadius, vertexColor);
+    }
+    circle(randomPoint, firstPointRadius, firstPointColor);
+  }
+
   isAnimationRunning = true;
 }
 
@@ -196,40 +206,14 @@ function update() {
     }
 
     let pos = lerp(lastPos, vertices[vertexIndex]);
-    points.push({ pos, vertexIndex });
+    let color = $colorForEachVertex.checked
+      ? vertices[vertexIndex].color
+      : globalVertexColor;
+    circle(pos, pointsRadius, color);
     lastPos = pos;
   }
-
-  $pointsCount.textContent = points.length;
 }
 setInterval(update, iterationInterval);
-
-function render() {
-  if (!isAnimationRunning) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  for (let i = 0; i < points.length; i++) {
-    let point = points[i];
-    let color = $colorForEachVertex.checked
-      ? vertices[point.vertexIndex].color
-      : globalVertexColor;
-    circle(point.pos, pointsRadius, color);
-  }
-
-  if ($showVertices.checked) {
-    for (let i = 0; i < vertices.length; i++) {
-      let vertex = vertices[i];
-      circle(vertex, vertexRadius, vertexColor);
-    }
-    circle(randomPoint, firstPointRadius, firstPointColor);
-  }
-
-  requestAnimationFrame(render);
-}
-requestAnimationFrame(render);
-
-let isAnimationRunning = false;
 
 document.getElementById('restartF').addEventListener('click', function() {
   start();

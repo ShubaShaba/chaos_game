@@ -35,13 +35,12 @@
         <input id="pathPercent" type="text" value="50" />
       </p>
       <p>
-        <b>Type of generation:</b>
-        <select id="typeOfGeneration">
-          <option value="1">Random chosen next vertex</option>
-          <option value="2"
-            >Random chosen next vertex exept this one again</option
-          >
-          <option value="3">Random chosen neighbor vertex</option>
+        <b>Vertex selection strategy:</b>
+        <select id="vertexSelectionStrategy">
+          <option value="1">random</option>
+          <option value="2">random except current</option>
+          <option value="3">random neighbor or current</option>
+          <option value="4">random neighbor</option>
         </select>
       </p>
       <p>
