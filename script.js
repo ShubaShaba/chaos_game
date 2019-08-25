@@ -19,8 +19,12 @@ function random(min, max) {
   return min + Math.random() * (max - min);
 }
 
+function randomInt(min, max) {
+  return Math.floor(random(min, max));
+}
+
 function randomElement(array) {
-  return array[Math.floor(random(0, array.length))];
+  return array[randomInt(0, array.length)];
 }
 
 function bestFitInside(w1, h1, w2, h2) {
@@ -41,28 +45,18 @@ function bestFitInside(w1, h1, w2, h2) {
 function circle(p, r, color) {
   ctx.beginPath();
   ctx.fillStyle = color;
-  let result = bestFitInside(canvas.width, canvas.height, 1, 1);
-  let offset = result.offset,
-    scale = result.scale;
+  let offset = { x: 0, y: 0 };
+  let scale;
+  if (canvas.width >= canvas.height) {
+    scale = canvas.height;
+    offset.x = (canvas.width - scale) / 2;
+  } else {
+    scale = canvas.width;
+    offset.y = (canvas.height - scale) / 2;
+  }
   ctx.arc(offset.x + p.x * scale, offset.y + p.y * scale, r, 0, Math.PI * 2);
   ctx.fill();
   ctx.closePath();
-}
-
-function nextArrayElementIndex(array, currentI, through, action) {
-  let index;
-  if (action) {
-    index = currentI + through;
-    if (index >= array.length) {
-      index = 0 + index - array.length;
-    }
-  } else if (!action) {
-    index = currentI - through;
-    if (index < 0) {
-      index = array.length + index;
-    }
-  }
-  return index;
 }
 
 let colors = [
@@ -98,7 +92,9 @@ let firstPointColor = '#FF4500';
 let $colorForEachVertex = document.getElementById('colorForEachVertex');
 let $verticesCount = document.getElementById('verticesCount');
 let $pathPercent = document.getElementById('pathPercent');
-let $typeOfCalcRandomDirection = document.getElementById('typeOfGeneration');
+let $vertexSelectionStrategy = document.getElementById(
+  'vertexSelectionStrategy',
+);
 let $showVertices = document.getElementById('showVertices');
 
 function lerp(a, b) {
@@ -128,10 +124,9 @@ function createVertices() {
   }
 }
 
-let randomPoint = {};
-
 let lastPos;
-let lastChosenVertex;
+let randomPoint;
+let currentVertex;
 
 let points = [];
 
@@ -139,11 +134,10 @@ function start() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   vertices = [];
   points = [];
-  randomPoint.x = random(0, 1);
-  randomPoint.y = random(0, 1);
-  lastChosenVertex = null;
-  lastPos = null;
+  randomPoint = { x: random(0, 1), y: random(0, 1) };
+  lastPos = randomPoint;
   createVertices();
+  currentVertex = randomElement(vertices);
   isAnimationRunning = true;
 }
 
@@ -152,38 +146,61 @@ function update() {
 
   if (vertices[0]) {
     for (let i = 0; i < newPointsPerIteration; i++) {
-      let nextPointData = randomElement(vertices);
-
-      let typeOfCalcRandomDirection = Number($typeOfCalcRandomDirection.value);
-
-      if (typeOfCalcRandomDirection === 3 && lastChosenVertex != null) {
-        do {
-          nextPointData = randomElement(vertices);
-        } while (
-          nextArrayElementIndex(vertices, nextPointData.index, 1, true) !==
-            lastChosenVertex.index &&
-          nextArrayElementIndex(vertices, nextPointData.index, 1, false) !==
-            lastChosenVertex.index &&
-          nextArrayElementIndex(vertices, nextPointData.index, 0, false) !==
-            lastChosenVertex.index
-        );
+      let vertexSelectionStrategy = Number($vertexSelectionStrategy.value);
+      switch (vertexSelectionStrategy) {
+        case 1: {
+          currentVertex = randomElement(vertices);
+          break;
+        }
+        case 2: {
+          let index = randomInt(0, vertices.length - 1);
+          if (index < currentVertex.index) {
+            currentVertex = vertices[index];
+          } else {
+            currentVertex = vertices[index + 1];
+          }
+          break;
+        }
+        case 3: {
+          let direction = randomInt(0, 3);
+          if (direction === 0) {
+            currentVertex = currentVertex;
+          } else if (direction === 1) {
+            if (currentVertex.index > 0) {
+              currentVertex = vertices[currentVertex.index - 1];
+            } else {
+              currentVertex = vertices[vertices.length - 1];
+            }
+          } else if (direction === 2) {
+            if (currentVertex.index < vertices.length - 1) {
+              currentVertex = vertices[currentVertex.index + 1];
+            } else {
+              currentVertex = vertices[0];
+            }
+          }
+          break;
+        }
+        case 4: {
+          let direction = randomInt(0, 2);
+          if (direction === 0) {
+            if (currentVertex.index > 0) {
+              currentVertex = vertices[currentVertex.index - 1];
+            } else {
+              currentVertex = vertices[vertices.length - 1];
+            }
+          } else if (direction === 1) {
+            if (currentVertex.index < vertices.length - 1) {
+              currentVertex = vertices[currentVertex.index + 1];
+            } else {
+              currentVertex = vertices[0];
+            }
+          }
+          break;
+        }
       }
 
-      if (typeOfCalcRandomDirection === 2 && lastChosenVertex != null) {
-        do {
-          nextPointData = randomElement(vertices);
-        } while (
-          nextPointData.x === lastChosenVertex.x &&
-          nextPointData.y === lastChosenVertex.y
-        );
-      }
-
-      if (typeOfCalcRandomDirection === 2 || typeOfCalcRandomDirection === 3) {
-        lastChosenVertex = nextPointData;
-      }
-
-      let pos = lerp(lastPos != null ? lastPos : randomPoint, nextPointData);
-      points.push({ pos, color: nextPointData.color });
+      let pos = lerp(lastPos, currentVertex);
+      points.push({ pos, color: currentVertex.color });
       lastPos = pos;
     }
   }
