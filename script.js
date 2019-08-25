@@ -108,36 +108,32 @@ function lerp(a, b) {
 let vertices = [];
 let globalVertexColor;
 
-function createVertices() {
-  globalVertexColor = randomElement(colors);
-
-  let verticesCount = Number($verticesCount.value);
-  for (let i = 0; i < verticesCount; i++) {
-    let angle = 2 * Math.PI * (i / verticesCount - 1 / 4);
-
-    let x = Math.cos(angle) / 3 + 1 / 2,
-      y = Math.sin(angle) / 3 + 1 / 2;
-
-    color = randomElement(colors);
-
-    vertices.push({ x, y, color, index: i });
-  }
-}
-
 let lastPos;
 let randomPoint;
-let currentVertex;
+let vertexIndex;
 
 let points = [];
 
 function start() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  vertices = [];
   points = [];
   randomPoint = { x: random(0, 1), y: random(0, 1) };
   lastPos = randomPoint;
-  createVertices();
-  currentVertex = randomElement(vertices);
+
+  globalVertexColor = randomElement(colors);
+
+  vertices = [];
+  let verticesCount = Number($verticesCount.value);
+  for (let i = 0; i < verticesCount; i++) {
+    let angle = 2 * Math.PI * (i / verticesCount - 0.25);
+
+    let x = Math.cos(angle) / 3 + 0.5,
+      y = Math.sin(angle) / 3 + 0.5;
+
+    color = randomElement(colors);
+
+    vertices.push({ x, y, color });
+  }
+  vertexIndex = randomElement(vertices);
   isAnimationRunning = true;
 }
 
@@ -149,33 +145,33 @@ function update() {
       let vertexSelectionStrategy = Number($vertexSelectionStrategy.value);
       switch (vertexSelectionStrategy) {
         case 1: {
-          currentVertex = randomElement(vertices);
+          vertexIndex = randomInt(0, vertices.length);
           break;
         }
         case 2: {
           let index = randomInt(0, vertices.length - 1);
-          if (index < currentVertex.index) {
-            currentVertex = vertices[index];
+          if (index < vertexIndex) {
+            vertexIndex = index;
           } else {
-            currentVertex = vertices[index + 1];
+            vertexIndex = index + 1;
           }
           break;
         }
         case 3: {
           let direction = randomInt(0, 3);
           if (direction === 0) {
-            currentVertex = currentVertex;
+            // vertexIndex = vertexIndex;
           } else if (direction === 1) {
-            if (currentVertex.index > 0) {
-              currentVertex = vertices[currentVertex.index - 1];
+            if (vertexIndex > 0) {
+              vertexIndex -= 1;
             } else {
-              currentVertex = vertices[vertices.length - 1];
+              vertexIndex = vertices.length - 1;
             }
           } else if (direction === 2) {
-            if (currentVertex.index < vertices.length - 1) {
-              currentVertex = vertices[currentVertex.index + 1];
+            if (vertexIndex < vertices.length - 1) {
+              vertexIndex += 1;
             } else {
-              currentVertex = vertices[0];
+              vertexIndex = 0;
             }
           }
           break;
@@ -183,24 +179,24 @@ function update() {
         case 4: {
           let direction = randomInt(0, 2);
           if (direction === 0) {
-            if (currentVertex.index > 0) {
-              currentVertex = vertices[currentVertex.index - 1];
+            if (vertexIndex > 0) {
+              vertexIndex -= 1;
             } else {
-              currentVertex = vertices[vertices.length - 1];
+              vertexIndex = vertices.length - 1;
             }
           } else if (direction === 1) {
-            if (currentVertex.index < vertices.length - 1) {
-              currentVertex = vertices[currentVertex.index + 1];
+            if (vertexIndex < vertices.length - 1) {
+              vertexIndex += 1;
             } else {
-              currentVertex = vertices[0];
+              vertexIndex = 0;
             }
           }
           break;
         }
       }
 
-      let pos = lerp(lastPos, currentVertex);
-      points.push({ pos, color: currentVertex.color });
+      let pos = lerp(lastPos, vertices[vertexIndex]);
+      points.push({ pos, vertexIndex });
       lastPos = pos;
     }
   }
@@ -214,11 +210,10 @@ function render() {
 
   for (let i = 0; i < points.length; i++) {
     let point = points[i];
-    circle(
-      point.pos,
-      pointsRadius,
-      $colorForEachVertex.checked ? point.color : globalVertexColor,
-    );
+    let color = $colorForEachVertex.checked
+      ? vertices[point.vertexIndex].color
+      : globalVertexColor;
+    circle(point.pos, pointsRadius, color);
   }
 
   if ($showVertices.checked) {
