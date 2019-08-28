@@ -1,5 +1,5 @@
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
 
 function adjustCanvasSize() {
   let viewportWidth = document.documentElement.clientWidth;
@@ -13,7 +13,7 @@ function adjustCanvasSize() {
   }
 }
 adjustCanvasSize();
-window.addEventListener('resize', adjustCanvasSize);
+window.addEventListener("resize", adjustCanvasSize);
 
 function random(min, max) {
   return min + Math.random() * (max - min);
@@ -25,21 +25,6 @@ function randomInt(min, max) {
 
 function randomElement(array) {
   return array[randomInt(0, array.length)];
-}
-
-function bestFitInside(w1, h1, w2, h2) {
-  let offset = { x: 0, y: 0 };
-  let scale;
-
-  if (w1 / h1 >= w2 / h2) {
-    scale = h1 / h2;
-    offset.x = (w1 - w2 * scale) / 2;
-  } else {
-    scale = w1 / w2;
-    offset.y = (h1 - h2 * scale) / 2;
-  }
-
-  return { offset, scale };
 }
 
 function circle(p, r, color) {
@@ -60,23 +45,23 @@ function circle(p, r, color) {
 }
 
 let colors = [
-  '#FFFF00',
-  '#00FFFF',
-  '#FF0040',
-  '#00FF00',
-  '#FF0000',
-  '#0404B4',
-  '#FF00FF',
-  '#FFFFFF',
-  '#A4A4A4',
-  '#FF8000',
-  '#819FF7',
-  '#00BFFF',
-  '#8A2BE2',
-  '#9370DB',
-  '#6A5ACD',
-  '#4B0082',
-  '#006400',
+  "#FFFF00",
+  "#00FFFF",
+  "#FF0040",
+  "#00FF00",
+  "#FF0000",
+  "#0404B4",
+  "#FF00FF",
+  "#FFFFFF",
+  "#A4A4A4",
+  "#FF8000",
+  "#819FF7",
+  "#00BFFF",
+  "#8A2BE2",
+  "#9370DB",
+  "#6A5ACD",
+  "#4B0082",
+  "#006400"
 ];
 
 let newPointsPerIteration = 10;
@@ -86,23 +71,23 @@ let vertexRadius = 4;
 let firstPointRadius = 3;
 let pointsRadius = 1;
 
-let vertexColor = '#FFFFFF';
-let firstPointColor = '#FF4500';
+let vertexColor = "#FFFFFF";
+let firstPointColor = "#FF4500";
 
-let $colorForEachVertex = document.getElementById('colorForEachVertex');
-let $verticesCount = document.getElementById('verticesCount');
-let $pathPercent = document.getElementById('pathPercent');
+let $colorForEachVertex = document.getElementById("colorForEachVertex");
+let $verticesCount = document.getElementById("verticesCount");
+let $pathPercent = document.getElementById("pathPercent");
 let $vertexSelectionStrategy = document.getElementById(
-  'vertexSelectionStrategy',
+  "vertexSelectionStrategy"
 );
-let $showVertices = document.getElementById('showVertices');
-let $pointsCount = document.getElementById('pointsCount');
+let $showVertices = document.getElementById("showVertices");
+let $pointsCount = document.getElementById("pointsCount");
 
 function lerp(a, b) {
   let delta = Number($pathPercent.value / 100);
   return {
     x: a.x + (b.x - a.x) * delta,
-    y: a.y + (b.y - a.y) * delta,
+    y: a.y + (b.y - a.y) * delta
   };
 }
 
@@ -215,15 +200,15 @@ function update() {
 }
 setInterval(update, iterationInterval);
 
-document.getElementById('restartF').addEventListener('click', function() {
+document.getElementById("restartF").addEventListener("click", function() {
   start();
 });
 
-document.getElementById('stopF').addEventListener('click', function() {
+document.getElementById("stopF").addEventListener("click", function() {
   isAnimationRunning = false;
 });
 
-document.getElementById('goF').addEventListener('click', function() {
+document.getElementById("goF").addEventListener("click", function() {
   isAnimationRunning = true;
 });
 
